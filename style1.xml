@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Node>
+    <Header>
+        <Title>Parameter History Report</Title>
+        <MachineID>4603</MachineID>
+        <MachineCustomerName>AT</MachineCustomerName>
+        <MachineType>XT:860H</MachineType>
+        <SoftwareRelease>at5.0.0</SoftwareRelease>
+        <CreatedBy>software component CO</CreatedBy>
+        <CreateTime>2019-03-01</CreateTime>
+        <MachineHostDeltaTime>0</MachineHostDeltaTime>
+    </Header>
+    <Input>
+        <TimePeriod>
+            <StartTime>2019-02-28</StartTime>
+            <EndTime>2019-03-01</EndTime>
+        </TimePeriod>
+        <DataSetName>AfLaserGreen</DataSetName>
+        <MaxValues>16000</MaxValues>
+    </Input>
+    <ParmeterHistoryList>
+        <elt>
+            <ParameterName>AfLaserGreen</ParameterName>
+            <Unit>mW</Unit>
+            <MaxValuesReached>false</MaxValuesReached>
+            <ValueList>
+                <elt>
+                    <SampleTime>2019-02-28</SampleTime>
+                    <Value>54.100536</Value>
+                    <abc>
+                        <aa>aa</aa>
+                        <aa>aa</aa>
+                    </abc>
+                    <abc>
+                        <ss>ss</ss>
+                        <ss>ss</ss>
+                    </abc>
+                    <abc>
+                        <dd>dd</dd>
+                        <dd>dd</dd>
+                        <ccc>
+                            <aa>aa</aa>
+                            <bb>bb</bb>
+                        </ccc>
+                        <ccc>
+                            <aa>aa</aa>
+                            <bb>bb</bb>
+                        </ccc>
+                    </abc>
+                </elt>
+                <elt>
+                    <SampleTime>2019-02-29</SampleTime>
+                    <Value>55.100536</Value>
+                </elt>
+                <elt>
+                    <SampleTime>2019-02-29</SampleTime>
+                    <Value>55.100536</Value>
+                </elt>
+            </ValueList>
+        </elt>
+    </ParmeterHistoryList>
+</Node>
