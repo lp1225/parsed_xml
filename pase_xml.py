@@ -111,6 +111,48 @@ def convert_json(root, all_dict):
 
     return all_dict
 
+temp_dict = {}
+def get_json(node):
+    """
+    递归调用，实现
+    """
+    temp_dict = {}
+    # 递归出口
+    if node.getchildren() == []:
+        temp_dict[node.tag] = node.text
+
+    if node.getchildren() != []:
+        # 判断是否存在子节点重复
+        child_list = node.getchildren()
+        # print(child_list)
+        for child in child_list:
+            res = check_list(child, child_list)
+            if res == True:
+                # 有重复节点,生成数组[]
+                # 是否append
+                if temp_dict.get(child.tag) == None:
+                    temp_dict[child.tag] = [get_json(child)]
+                else:
+                    temp_dict[child.tag].append(get_json(child))
+            else:
+                # 没有重复节点
+                get_json(child)
+            # 子节点是否还存在子节点,递归
+            get_json(child)
+    return temp_dict
+
+def check_list(node, child_list):
+    """
+    判断列表中是否有和自己重复的元素
+    """
+    child_list.remove(node)
+    if child_list == None:
+        return False
+    if node.tag in [i.tag for i in child_list]:
+        # 重复返回True
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -125,7 +167,8 @@ if __name__ == '__main__':
     root = tree.getroot()
     all_dict = OrderedDict()
     num = 0
-    after = 0
-    res = convert_json(root, all_dict)
+    # res = convert_json(root, all_dict)
+    res = get_json(root)
+
     print('res===', res)
     print(json.dumps(res))
