@@ -1,14 +1,25 @@
 import os
-import xml.etree.ElementTree as etree
 import json
-from collections import OrderedDict
 import copy
+import xml.etree.ElementTree as etree
+from collections import OrderedDict
+
 
 num = 0
 help_list = []
 
-def parse_data(root, all_list):
 
+def parse_data(root, all_list):
+    """
+    由于用的是单列表的方式, 层级关系用一个变量即可控制,
+    若以字典的形式保存,则会出现同级多层列表,无法使用这种方式来控制
+
+    递归的实现,则是建立在当前的父问题的角度考虑,假设子问题已经实现,所以该法会在子问题结束时返回,
+    即[[...[key, value]...]]不断嵌套回去
+    :param root: node object
+    :param all_list: arraylist
+    :return:
+    """
     child_list = root.getchildren()
     num = 0
     for child in child_list:
@@ -39,6 +50,7 @@ def get_element(child, temp_list):
 def convert_json(root, all_dict):
     """
     改为字典的形式
+    notice: 弃用,无法解析多层xml
     """
     global num
     child_list = root.getchildren()
@@ -75,7 +87,7 @@ def convert_json(root, all_dict):
                     all_dict[child.tag] = {}
                     save_dict = all_dict[child.tag]
                     print('help_', help_list)
-                    print('svae', save_dict)
+                    print('save', save_dict)
                     # num = 0
                     # help_list.append(num)
                     convert_json(child, save_dict)
@@ -111,64 +123,98 @@ def convert_json(root, all_dict):
 
     return all_dict
 
-temp_dict = {}
+
 def get_json(node):
     """
     递归调用，实现
+    process:
+        1.判断传入的节点是否有子节点
+            有:
+                判断该节点是否是唯一元素
+                是:
+                    不生成数组,递归
+                否:
+                    生成数组, 递归
+            否:
+                没有子节点,到达递归出口
+
+        # 方式二(感觉有点小问题)
+        2.判断传入的节点是否有子节点
+            有:
+                判断该子节点是否有同级节点的重复
+
+                有重复:  生成数组  ---> 判断是否含有子节点(递归)
+                无重复: 不生成数组 ---> 判断是否含有子节点(递归)
+            否:
+                没有子节点,到达递归出口
     """
-    temp_dict = {}
+    temp_dict = OrderedDict()
+    # 从数组中取node
+    if isinstance(node, list):
+        node = node[0]
+
     # 递归出口
     if node.getchildren() == []:
         temp_dict[node.tag] = node.text
 
     if node.getchildren() != []:
-        # 判断是否存在子节点重复
         child_list = node.getchildren()
-        # print(child_list)
-        for child in child_list:
-            res = check_list(child, child_list)
-            if res == True:
-                # 有重复节点,生成数组[]
-                # 是否append
+
+        # 判断元素是否唯一
+        if len(child_list) == 1:
+            temp_dict[child_list[0].tag] = get_json(child_list)
+        else:
+            for child in child_list:
+
                 if temp_dict.get(child.tag) == None:
                     temp_dict[child.tag] = [get_json(child)]
+                    # mid_dict = [get_json(child)]
+                    # temp_dict[child.tag] = mid_dict
                 else:
                     temp_dict[child.tag].append(get_json(child))
-            else:
-                # 没有重复节点
-                get_json(child)
-            # 子节点是否还存在子节点,递归
-            get_json(child)
+                    # mid_dict = get_json(child)
+                    # temp_dict[child.tag].append(mid_dict)
     return temp_dict
+
 
 def check_list(node, child_list):
     """
     判断列表中是否有和自己重复的元素
+    notice: 比较的对象为element对象,且不可修改原有的节点列表
     """
-    child_list.remove(node)
-    if child_list == None:
+    help_list = copy.deepcopy(child_list)
+    tmp_list = list(zip(help_list, child_list))  # 0 为copy, 1为real
+    i = 0
+    for item in tmp_list:
+        if node == item[1]:
+            tmp_list.pop(i)
+        i += 1
+
+    comp_list = [i[1] for i in tmp_list]
+
+    if comp_list == None:
         return False
-    if node.tag in [i.tag for i in child_list]:
+    if node.tag in [i.tag for i in comp_list]:
         # 重复返回True
         return True
     else:
         return False
 
+
 if __name__ == '__main__':
     dir_path = os.path.dirname(os.path.abspath(__file__))
     xmlpath = os.path.join(dir_path, 'style1.xml')
-    # tree = etree.parse(xmlpath)
-    # root = tree.getroot()
-    # all_list = []
-    # res = parse_data(root, all_list)
-    # print('res===', res)
-    # --------------------------
     tree = etree.parse(xmlpath)
     root = tree.getroot()
-    all_dict = OrderedDict()
-    num = 0
-    # res = convert_json(root, all_dict)
-    res = get_json(root)
-
+    all_list = []
+    res = parse_data(root, all_list)
     print('res===', res)
-    print(json.dumps(res))
+    # --------------------------
+    # tree = etree.parse(xmlpath)
+    # root = tree.getroot()
+    # all_dict = OrderedDict()
+    # num = 0
+    # # res = convert_json(root, all_dict)
+    # res = get_json(root)
+    # print('res===', res)
+    # print(json.dumps(res))
