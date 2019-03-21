@@ -204,17 +204,17 @@ def check_list(node, child_list):
 if __name__ == '__main__':
     dir_path = os.path.dirname(os.path.abspath(__file__))
     xmlpath = os.path.join(dir_path, 'style1.xml')
-    tree = etree.parse(xmlpath)
-    root = tree.getroot()
-    all_list = []
-    res = parse_data(root, all_list)
-    print('res===', res)
-    # --------------------------
     # tree = etree.parse(xmlpath)
     # root = tree.getroot()
-    # all_dict = OrderedDict()
-    # num = 0
-    # # res = convert_json(root, all_dict)
-    # res = get_json(root)
+    # all_list = []
+    # res = parse_data(root, all_list)
     # print('res===', res)
-    # print(json.dumps(res))
+    # --------------------------
+    tree = etree.parse(xmlpath)
+    root = tree.getroot()
+    all_dict = OrderedDict()
+    num = 0
+    # res = convert_json(root, all_dict)
+    res = get_json(root)
+    print('res===', res)
+    print(json.dumps(res))
